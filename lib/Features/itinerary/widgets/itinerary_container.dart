@@ -1,18 +1,37 @@
-import 'dart:developer';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:http/http.dart' as http;
 import 'package:letstrip/Features/itinerary/screen/itinerary_result_screen.dart';
+
 import 'package:letstrip/common_widgets/budget_container.dart';
+import 'package:letstrip/common_widgets/build_button.dart';
 import 'package:letstrip/common_widgets/date_range_selector.dart';
+import 'package:letstrip/common_widgets/helper_widget.dart';
+import 'package:letstrip/common_widgets/multi_option_dropdown.dart';
+
 import 'package:letstrip/common_widgets/multi_select_dropdown.dart';
 import 'package:letstrip/common_widgets/textfeild.dart';
+
+import 'package:letstrip/generated/assets.dart';
 import 'package:letstrip/models/base_response.dart';
+import 'package:letstrip/models/dummy_response_model.dart';
+
 import 'package:letstrip/models/itinerary_request.dart';
 import 'package:letstrip/models/location_model.dart';
+import 'package:letstrip/network/environment.dart';
 import 'package:letstrip/repositories/auth_repo.dart';
-import 'package:letstrip/repositories/itinerary_controller.dart';
+
 import 'package:letstrip/repositories/itinerary_repo.dart';
-import 'package:provider/provider.dart';
+import 'package:letstrip/repositories/search_location_controller.dart';
+
+import 'package:letstrip/utils/padding_helper.dart';
+import 'package:letstrip/utils/size_config.dart';
+
+import 'package:letstrip/utils/utilities.dart';
+
 import 'package:responsive_builder/responsive_builder.dart';
 
 class ItineraryContainer extends StatefulWidget {
@@ -26,7 +45,8 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
   ItineraryRepository itineraryRepository = ItineraryRepository();
   String budget = '50000';
   String dateRange = '';
-  List<String> selectedTripTypes = [];
+  String selectedTripTypes = '';
+  var itineraryRequest = ItineraryRequest();
 
   final itineraryTrips = [
     'Honeymoon',
@@ -36,15 +56,23 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
     'Relaxed getaway',
     'Adventure',
   ];
+
+  final itineraryTrip = [
+    DropdownType('Honeymoon', Assets.assetsHoneymoon),
+    DropdownType('Family vacation', Assets.assetsFamityVacation),
+    DropdownType('Party and night life', Assets.assetsPartyLife),
+    DropdownType('Cultural exploration', Assets.assetsCulture),
+    DropdownType('Relaxed getaway', Assets.assetsRelex),
+    DropdownType('Adventure', Assets.assetsRelex),
+  ];
   List<LocationModel> _suggestions = [];
   List<LocationModel> _selectedPlaces = [];
-
-  final AuthService authService = AuthService();
+  List<String> destinations = [];
+  String tripType = '';
 
   void _onSearchChanged(String query) async {
     if (query.isNotEmpty) {
-      BaseResponse<List<LocationModel>> result =
-          await authService.searchPlaces(query);
+      var result = await authService.searchPlaces(query);
       if (result.success) {
         setState(() {
           _suggestions = result.data!;
@@ -64,11 +92,182 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
     });
   }
 
+  final AuthService authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    Get.put(SearchLocationController());
+  }
+
+  // final url = 'https://itinerary.letstrip.world/api/v1/production/itinerary';
+
+  // final token =
+  //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MmJhNTNhYzJkZjdlY2ZiMGMyYjQzNCIsImVtYWlsIjoic2hpa2hhcnMzNjlAZ21haWwuY29tIiwiYWN0aXZlIjp0cnVlLCJjdXJyZW5jeSI6eyJjb3VudHJ5IjoiTmV3IFplYWxhbmQgRG9sbGFyIiwic3ltYm9sIjoiJCIsImNvZGUiOiJOWkQifSwicm9sZSI6InVzZXIiLCJkZWxldGVkIjpmYWxzZSwiaWF0IjoxNzMxNzQ3Mjk3LCJleHAiOjE3MzQzMzkyOTd9.FPMHcum4v0kROuOpJQkl2C5ac8K7XtSJWORw1C6WNaY';
+  // final String baseUrl = Environment.itineraryBaseUrl;
+  // static const int maxAttempts = 3;
+
+  // Future<BaseResponse<DummyResponseModel>> getItinerary(
+  //     Map<String, dynamic> data) async {
+  //   var attempt = 1;
+
+  //   while (attempt <= maxAttempts) {
+  //     try {
+  //       // Log the data being sent
+  //       print("Sending data to API: $data");
+
+  //       final response = await http.post(
+  //         Uri.parse('$baseUrl/itinerary'),
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Authorization':
+  //               'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MmJhNTNhYzJkZjdlY2ZiMGMyYjQzNCIsImVtYWlsIjoic2hpa2hhcnMzNjlAZ21haWwuY29tIiwiYWN0aXZlIjp0cnVlLCJjdXJyZW5jeSI6eyJjb3VudHJ5IjoiTmV3IFplYWxhbmQgRG9sbGFyIiwic3ltYm9sIjoiJCIsImNvZGUiOiJOWkQifSwicm9sZSI6InVzZXIiLCJkZWxldGVkIjpmYWxzZSwiaWF0IjoxNzMxNzQ3Mjk3LCJleHAiOjE3MzQzMzkyOTd9.FPMHcum4v0kROuOpJQkl2C5ac8K7XtSJWORw1C6WNaY',
+  //         },
+  //         body: json.encode(data),
+  //       );
+
+  //       // Log the raw response
+  //       print("Raw Response: ${response.body}");
+
+  //       if (response.statusCode >= 200 && response.statusCode < 300) {
+  //         final responseData = json.decode(response.body);
+  //         print("Decoded response data: $responseData");
+
+  //         return BaseResponse.fromJson(
+  //           responseData,
+  //           (json) => DummyResponseModel.fromJson(json),
+  //         );
+  //       } else {
+  //         print("Error: ${response.statusCode}");
+  //         throw BaseApiException(
+  //             'Failed to load itinerary', response.statusCode);
+  //       }
+  //     } catch (e) {
+  //       print("Error occurred: $e");
+  //       if (attempt == maxAttempts) {
+  //         rethrow;
+  //       }
+  //       attempt++;
+  //     }
+  //   }
+  //   throw BaseApiException("Max attempts reached", 0);
+  // }
+
   @override
   Widget build(BuildContext context) {
-    final itineraryProvider = Provider.of<ItineraryProvider>(context);
+    // Correctly assign height and width
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
+
     return ScreenTypeLayout.builder(
       desktop: (context) => DesktopContainer(),
+      mobile: (context) =>
+          phoneContainer(width), // Pass width to phoneContainer
+      // tablet: (context) => tabletContainer(),
+    );
+  }
+
+  Widget phoneContainer(double width) {
+    return Scaffold(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        color: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: padAll(),
+            child: Column(
+              children: [
+                const Divider(
+                  color: Color.fromRGBO(57, 185, 111, 1),
+                  thickness: 3,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                CustomTextField(
+                  onChanged: _onSearchChanged,
+                  hintText: 'Where are you planning to go',
+                  prefixIcon: Image.asset(
+                    'assets/Vector (4).png',
+                    height: 15,
+                  ),
+                  focusBorderColor: const Color.fromRGBO(228, 228, 228, 1),
+                  selectedPlaces: _selectedPlaces,
+                  onPlaceSelected: (String) {},
+                ),
+                const SizedBox(height: 10),
+                if (_suggestions.isNotEmpty)
+                  Container(
+                    color: Colors.white,
+                    width: double.infinity,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _suggestions.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(_suggestions[index].cityWithCountry),
+                          onTap: () {
+                            _onPlaceSelected(
+                                _suggestions[index]); // Select the place
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                MultiOptionDropdown(
+                    hint: 'Choose your trip type',
+                    leadingIcon: Assets.assetsTripType,
+                    items: itineraryTrip,
+                    onItemSelected: (items) {
+                      tripType = items.join(", ");
+                    }),
+                boxH8(),
+                BudgetContainer(onValueUpdate: (value) {
+                  budget = value;
+                }),
+                boxH8(),
+                DateRangeSelector(onDateRangeSelect: (range) {
+                  dateRange = range;
+                }),
+                boxH8(),
+                vector(Assets.assetsItineraryHome,
+                    fit: BoxFit.fitWidth, height: width * 0.7),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.white, // Set the background color to white
+        child: Padding(
+          padding: padSym(horizontal: 16, vertical: 32),
+          child: buildButton("Next", onPressed: () {
+            ItineraryRequest request = ItineraryRequest(
+                destinations: ["Lucknow"],
+                tripType: "Family vacation",
+                budget: 404000,
+                startDate: "Nov 29, 2024",
+                endDate: "Nov 30, 2024",
+                originCity: "",
+                departureCity: "",
+                food: [],
+                singleFoodPreferred: false,
+                modeOfTransport: [],
+                customText: "",
+                accommodationType: [],
+                hotelCategory: 0,
+                travelingWithKid: false,
+                addLocalEvents: false,
+                activityPreferences: []);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ItineraryResultScreen(
+                          request: request,
+                        )));
+          }),
+        ),
+      ),
     );
   }
 
@@ -136,8 +335,8 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
                           hintText: "Choose your trip type",
                           onSelectionChanged: (selected) {
                             setState(() {
-                              selectedTripTypes =
-                                  selected; // Update selected trip types
+                              selectedTripTypes = selected
+                                  .join(', '); // Update selected trip types
                               print(selectedTripTypes);
                             });
                           },
@@ -181,49 +380,31 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
                             //   );
                             //   return;
                             // }
-                            // ItineraryRequest request = ItineraryRequest(
-                            //     destinations: _selectedPlaces
-                            //         .map((place) => place.cityWithCountry)
-                            //         .toList(),
-                            //     tripType: selectedTripTypes,
-                            //     budget: num.parse(budget),
-                            //     startDate: dateRange.split('\u2192')[0],
-                            //     endDate: dateRange.split('\u2192')[1]);
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => ItineraryResultScreen(
-                            //               request: request,
-                            //             )));
-
-                            final ItineraryRequest request = ItineraryRequest(
-                              originCity: "New York",
-                              destinations: ["Los Angeles", "San Francisco"],
-                              startDate: dateRange.split('\u2192')[0],
-                              endDate: dateRange.split('\u2192')[1],
-                              tripType: selectedTripTypes,
-                              budget: int.parse(budget),
-                              food: ["Italian", "Mexican"],
-                              modeOfTransport: ["Car", "Plane"],
-                            );
-
-                            final response =
-                                await itineraryRepository.getItinerary(request);
-
-                            if (response.success) {
-                              final itineraryList = response.data;
-                              print('itineraryList : $itineraryList');
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          ItineraryResultScreen(
-                                            itineraryList: itineraryList,
-                                            request: request,
-                                          )));
-                            } else {
-                              log(response.message!);
-                            }
+                            ItineraryRequest request = ItineraryRequest(
+                                destinations: ["Lucknow"],
+                                tripType: "Family vacation",
+                                budget: 404000,
+                                startDate: "Nov 29, 2024",
+                                endDate: "Nov 30, 2024",
+                                originCity: "",
+                                departureCity: "",
+                                food: [],
+                                singleFoodPreferred: false,
+                                modeOfTransport: [],
+                                customText: "",
+                                accommodationType: [],
+                                hotelCategory: 0,
+                                travelingWithKid: false,
+                                addLocalEvents: false,
+                                activityPreferences: []);
+                            print('on tap');
+                            itineraryRepository.getItinerary(request.toJson());
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ItineraryResultScreen(
+                                          request: request,
+                                        )));
                           },
                           child: Container(
                             height: 55,
@@ -462,4 +643,14 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
       ),
     );
   }
+}
+
+class BaseApiException implements Exception {
+  final String message;
+  final int code;
+
+  BaseApiException(this.message, this.code);
+
+  @override
+  String toString() => 'Error $code: $message';
 }

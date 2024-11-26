@@ -1,0 +1,18 @@
+<svg width="210" height="106" viewBox="0 0 210 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_3648_1626)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M169.866 5.5C169.481 4.83333 168.519 4.83333 168.134 5.5L163.227 14H14C10.6863 14 8 16.6863 8 20V89C8 92.3137 10.6863 95 14 95H196C199.314 95 202 92.3137 202 89V20C202 16.6863 199.314 14 196 14H174.773L169.866 5.5Z" fill="white"/>
+<path d="M168.134 5.5L167.701 5.25V5.25L168.134 5.5ZM169.866 5.5L170.299 5.25V5.25L169.866 5.5ZM163.227 14V14.5H163.515L163.66 14.25L163.227 14ZM174.773 14L174.34 14.25L174.485 14.5H174.773V14ZM168.567 5.75C168.759 5.41667 169.241 5.41667 169.433 5.75L170.299 5.25C169.722 4.25 168.278 4.25 167.701 5.25L168.567 5.75ZM163.66 14.25L168.567 5.75L167.701 5.25L162.793 13.75L163.66 14.25ZM14 14.5H163.227V13.5H14V14.5ZM8.5 20C8.5 16.9624 10.9624 14.5 14 14.5V13.5C10.4101 13.5 7.5 16.4102 7.5 20H8.5ZM8.5 89V20H7.5V89H8.5ZM14 94.5C10.9624 94.5 8.5 92.0376 8.5 89H7.5C7.5 92.5899 10.4101 95.5 14 95.5V94.5ZM196 94.5H14V95.5H196V94.5ZM201.5 89C201.5 92.0376 199.038 94.5 196 94.5V95.5C199.59 95.5 202.5 92.5899 202.5 89H201.5ZM201.5 20V89H202.5V20H201.5ZM196 14.5C199.038 14.5 201.5 16.9624 201.5 20H202.5C202.5 16.4101 199.59 13.5 196 13.5V14.5ZM174.773 14.5H196V13.5H174.773V14.5ZM169.433 5.75L174.34 14.25L175.207 13.75L170.299 5.25L169.433 5.75Z" fill="#E4E4E4"/>
+</g>
+<defs>
+<filter id="filter0_d_3648_1626" x="0.5" y="0.5" width="209" height="105" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="3"/>
+<feGaussianBlur stdDeviation="3.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_3648_1626"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_3648_1626" result="shape"/>
+</filter>
+</defs>
+</svg>

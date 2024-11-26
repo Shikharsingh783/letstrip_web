@@ -4,9 +4,9 @@ class ChipContainer extends StatelessWidget {
   final List<String> items; // List of items to display as chips
 
   const ChipContainer({
-    Key? key,
+    super.key,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

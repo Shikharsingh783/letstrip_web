@@ -1,7 +1,16 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:letstrip/common_widgets/helper_widget.dart';
+import 'package:letstrip/common_widgets/text_feild.dart';
+
+import 'package:letstrip/generated/I10n.dart';
+import 'package:letstrip/generated/assets.dart';
+
+import 'package:letstrip/theme/text_style.dart';
+import 'package:letstrip/utils/padding_helper.dart';
+import 'package:letstrip/utils/toast.dart';
+import 'package:letstrip/utils/utilities.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class DateRangeSelector extends StatefulWidget {
@@ -23,21 +32,32 @@ class DateRangeSelector extends StatefulWidget {
 class _DateRangeSelectorState extends State<DateRangeSelector> {
   bool isDateRangePickerVisible = false;
   late String _range;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
   @override
   void initState() {
     super.initState();
     _range = widget.initialValue ?? '';
+    if (_range.isNotEmpty) {
+      // Parse the initial range into start and end dates
+      var dates = _range.split('→');
+      if (dates.length == 2) {
+        _startDate = DateTime.tryParse(dates[0].trim());
+        _endDate = DateTime.tryParse(dates[1].trim());
+      }
+    }
   }
 
   void _onSelectionChanged(DateRangePickerSelectionChangedArgs args) {
     setState(() {
       if (args.value.startDate != null && args.value.endDate == null) {
-        _showInfoToast('Now select an end date', milliseconds: 1000);
+        showInfoToast('Now select nd date', milliseconds: 1000);
       }
       if (args.value.startDate != null && args.value.endDate != null) {
-        _range =
-            '${_formatDate(args.value.startDate)} → ${_formatDate(args.value.endDate)}';
+        _startDate = args.value.startDate;
+        _endDate = args.value.endDate;
+        _range = '${formatDate(_startDate!)}\u2192${formatDate(_endDate!)}';
         isDateRangePickerVisible = false;
         widget.onDateRangeSelect(_range);
       }
@@ -45,31 +65,18 @@ class _DateRangeSelectorState extends State<DateRangeSelector> {
     });
   }
 
-  /// Format Date using `intl` package.
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-    return DateFormat('dd/MM/yyyy').format(date);
-  }
-
-  /// Show a SnackBar as a toast replacement.
-  void _showInfoToast(String message, {int milliseconds = 1500}) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      duration: Duration(milliseconds: milliseconds),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
   @override
   Widget build(BuildContext context) {
     return isDateRangePickerVisible
         ? SfDateRangePicker(
             backgroundColor: Colors.white,
-            headerStyle: const DateRangePickerHeaderStyle(
-              backgroundColor: Colors.white,
-            ),
+            headerStyle:
+                const DateRangePickerHeaderStyle(backgroundColor: Colors.white),
             onSelectionChanged: _onSelectionChanged,
             selectionMode: DateRangePickerSelectionMode.range,
+            initialSelectedRange: _startDate != null && _endDate != null
+                ? PickerDateRange(_startDate!, _endDate!)
+                : null,
           )
         : GestureDetector(
             onTap: () {
@@ -78,33 +85,22 @@ class _DateRangeSelectorState extends State<DateRangeSelector> {
               });
             },
             child: AbsorbPointer(
-              child: TextField(
+              child: textField(
                 controller: TextEditingController(text: _range),
-                style: TextStyle(
-                  fontSize: widget.isSmallText ? 12 : 16,
-                  color: Colors.black,
+                context: context,
+                style: widget.isSmallText
+                    ? AppTextTheme.captionStyle
+                    : AppTextTheme.bodyStyle,
+                outlineLabel: 'Select Date range',
+                outlineLabelStyle: TextStyle(
+                    fontSize: 14,
+                    fontFamily: "Raleway",
+                    fontWeight: FontWeight.w400,
+                    color: Color.fromRGBO(102, 102, 102, 1)),
+                prefixIcon: Padding(
+                  padding: padAll(value: 14),
+                  child: vector(Assets.assetsDays),
                 ),
-                decoration: InputDecoration(
-                    hintText: 'Select Date Range',
-                    hintStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Raleway'),
-                    prefixIcon: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          'assets/Vector (2).png',
-                          height: 30,
-                          width: 30,
-                        )),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                            color: Color.fromRGBO(228, 228, 228, 1), width: 1))
-                    // border: const OutlineInputBorder(
-                    //     borderSide: BorderSide(
-                    //         color: Color.fromRGBO(228, 228, 228, 1), width: 0.5)),
-                    ),
               ),
             ),
           );

@@ -89,6 +89,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           obscureText: widget.obscureText,
           textInputAction: widget.textInputAction,
           onChanged: widget.onChanged,
+
           onFieldSubmitted: widget.onSubmitted,
           maxLines: widget.maxLines,
           enabled: widget.enabled,
@@ -103,6 +104,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintStyle: const TextStyle(
                 fontFamily: 'Raleway',
                 fontWeight: FontWeight.w400,
+                color: Color.fromRGBO(102, 102, 102, 1),
                 fontSize: 16),
             errorText: widget.errorText,
             filled: true,
@@ -112,12 +114,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide:
-                  BorderSide(color: widget.focusBorderColor, width: 0.2),
+                  BorderSide(color: widget.focusBorderColor, width: 0.5),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide:
-                  BorderSide(color: widget.enabledBorderColor, width: 0.3),
+                  BorderSide(color: widget.enabledBorderColor, width: 0.5),
             ),
           ),
         ),

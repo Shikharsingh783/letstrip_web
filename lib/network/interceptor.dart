@@ -9,7 +9,9 @@ class CustomInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (options.headers[authorizationHeaderKey] == true) {
       options.headers.remove(authorizationHeaderKey);
-      options.headers.addAll({authorizationHeaderTag: "Bearer ${SharedPref.getString(authToken)}"});
+      options.headers.addAll({
+        authorizationHeaderTag: "Bearer ${SharedPref.getString(authToken)}"
+      });
     } else {
       options.headers.remove(authorizationHeaderKey);
     }
@@ -18,4 +20,7 @@ class CustomInterceptor extends Interceptor {
 }
 
 var logInterceptor = PrettyDioLogger(
-    requestHeader: true, requestBody: true, responseBody: true, responseHeader: false);
+    requestHeader: true,
+    requestBody: true,
+    responseBody: true,
+    responseHeader: false);

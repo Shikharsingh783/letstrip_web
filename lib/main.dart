@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:letstrip/Features/itinerary/screen/itinerary_result_screen.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart'; // Import the GetX package
 import 'package:letstrip/Features/itinerary/screen/itinerary_screen.dart';
-import 'package:letstrip/Features/login/screen/login_screen.dart';
-import 'package:letstrip/repositories/itinerary_controller.dart';
-import 'package:letstrip/repositories/itinerary_repo.dart';
-import 'package:provider/provider.dart';
+import 'package:letstrip/Features/recommendation/screens/recommendation_screen.dart';
 
-void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => ItineraryProvider(ItineraryRepository()),
-        ),
-      ],
-      child: MyApp(),
-    ),
-  );
+void main() async {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,9 +13,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ItineraryScreen(),
+    return ScreenUtilInit(
+      designSize: MediaQuery.of(context).size.width > 600
+          ? const Size(834, 1112) // iPad (7th gen) design size
+          : const Size(375, 812), // Mobile design size
+      minTextAdapt: true,
+      splitScreenMode: true,
+
+      builder: (context, child) {
+        return const GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: RecommendationScreen(),
+        );
+      },
     );
   }
 }

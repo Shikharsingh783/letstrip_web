@@ -47,6 +47,20 @@ dependencies:
   unsplash_client: ^2.2.0
   flutter_rating_bar: ^4.0.1
   provider: ^6.1.2
+  get: ^4.6.6
+  pusher_beams: ^1.1.1
+  pusher_client: ^2.0.0
+  pusher_channels_flutter: ^2.3.0
+  delightful_toast: ^1.1.0
+  flutter_screenutil: ^5.9.3
+  flutter_localization: ^0.2.2
+  url_launcher: ^6.3.1
+  crop_image: ^1.0.15
+  image_cropper: ^8.0.2
+  intl_utils: ^2.8.7
+  expansion_tile_card: ^3.0.0
+  flutter_advanced_switch: ^3.1.0
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:
