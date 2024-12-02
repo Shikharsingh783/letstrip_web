@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
+
 import 'package:letstrip/models/user_model.dart';
 import 'package:letstrip/utils/constants.dart';
 import 'package:letstrip/utils/toast.dart';

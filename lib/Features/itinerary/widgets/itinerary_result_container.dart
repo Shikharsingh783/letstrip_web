@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -17,18 +16,17 @@ import 'package:letstrip/common_widgets/star_rating.dart';
 import 'package:letstrip/generated/assets.dart';
 import 'package:letstrip/models/itinerary_request.dart';
 import 'package:letstrip/models/itninerary_result_model.dart';
-import 'package:letstrip/network/environment.dart';
 import 'package:letstrip/repositories/auth_repo.dart';
 import 'package:letstrip/repositories/itinerary_controller.dart';
 import 'package:letstrip/repositories/itinerary_repo.dart';
 import 'package:letstrip/theme/text_style.dart';
-
+import 'package:letstrip/utils/constants.dart';
 import 'package:letstrip/utils/padding_helper.dart';
 import 'package:letstrip/utils/size_config.dart';
-
+import 'package:letstrip/utils/toast.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:http/http.dart' as http;
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
+import 'dart:js' as js;
 
 class ItineraryResultContainer extends StatefulWidget {
   final ItineraryRequest request;
@@ -44,7 +42,10 @@ class ItineraryResultContainer extends StatefulWidget {
 ItineraryRepository itineraryRepository = ItineraryRepository();
 
 class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
-  final String baseUrl = 'https://identity.letstrip.world/api/v1/production';
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  late String pusherApiKey = '608da2e342ab52f4751c';
+  late String pusherClusterName = "ap2";
+  late String pusherChannelName = "streaming";
   double _rating = 3;
   bool isSwitch1On = false;
   bool isSwitch2On = false;
@@ -113,62 +114,113 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
   void initState() {
     super.initState();
 
-    // Delay initialization to ensure Flutter bindings are ready
+    // Delay initialization until after the first build completes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.result != null && widget.result!.isNotEmpty) {
+      // Initialize only if widget.result is null
+      if (widget.result == null) {
+        controller.getItinerary(widget.request);
+
+        // Setup a listener on `controller.eventId` to initialize Pusher
+        ever(controller.eventId, (value) {
+          if (value != null) {
+            setupPusher(value);
+          }
+        });
+      } else {
+        // Update the list with image URLs from the result
         for (ItineraryResultModel model in widget.result!) {
           controller.updateListWithImageUrl(model);
         }
-      } else {
-        controller.getItinerary(widget.request);
-        ever(controller.eventId, (value) {
-          startPollingForUpdates(
-              value); // Use polling or replace with setupPusher
-        });
       }
 
-      // Initialize fields from request
-      budget = widget.request.budget.toString();
-      destinations = widget.request.destinations;
-      tripType = widget.request.tripType;
-      endDate = widget.request.endDate!;
-      startDate = widget.request.startDate!;
+      // Initialize fields with request data if available
+      if (widget.request != null) {
+        // Ensure no direct `setState()` calls are happening here
+        // Instead, initialize properties for later use
+        budget = widget.request.budget.toString();
+        destinations = widget.request.destinations;
+        tripType = widget.request.tripType;
+        endDate = widget.request.endDate!;
+        startDate = widget.request.startDate!;
+      }
     });
   }
 
-  Timer? pollingTimer;
+  void setupPusher(String eventId) async {
+    try {
+      // Check if the eventId is null or empty
+      if (eventId == null || eventId.isEmpty) {
+        debugPrint("Error: eventId is null or empty");
+        showErrorToast("Event ID is missing.");
+        return; // Exit the function if eventId is null or empty
+      }
 
-  void startPollingForUpdates(String eventId) {
-    pollingTimer = Timer.periodic(Duration(seconds: 10), (timer) async {
-      try {
-        final response = await http.get(
-          Uri.parse('$baseUrl/itinerary/$eventId'),
-          headers: {
-            'Authorization':
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJpZCI6IjY3MmJhNTNhYzJkZjdlY2ZiMGMyYjQzNCIsImVtYWlsIjoic2hpa2hhcnMzNjlAZ21haWwuY29tIiwiYWN0aXZlIjp0cnVlLCJjdXJyZW5jeSI6eyJjb3VdHJ5IjoiTmV3IFplYWxhbmQgRG9sbGFyIiwic3ltYm9sIjoiJCIsImNvZGUiOiJOWkQifSwicm9sZSI6InVzZXIiLCJkZWxldGVkIjpmYWxzZSwiaWF0IjoxNzMxNzQ3Mjk3LCJleHAiOjE3MzQzMzkyOTd9FPMHcum4v0kROuOpJQkl2C5ac8K7XtSJWORw1C6WNaY',
-          },
-        );
-        if (response.statusCode == 200) {
-          var data = jsonDecode(response.body);
-          debugPrint("Raw Response: ${response.body}");
-          debugPrint("Decoded response data: $data");
-          if (data['status'] == 'Processing') {
-            debugPrint(
-                "Itinerary is still being generated. Polling will continue...");
-          } else if (data['status'] == 'Completed') {
-            debugPrint("Itinerary generation completed!");
-            controller
-                .updateListWithImageUrl(ItineraryResultModel.fromJson(data));
-            pollingTimer?.cancel(); // Stop polling once the itinerary is ready
-          } else {
-            debugPrint("Unhandled status: ${data['status']}");
-            pollingTimer?.cancel(); // Stop polling for unexpected status
+      // Log the eventId for debugging
+      debugPrint("Using eventId: $eventId");
+
+      // Ensure pusherChannelName is not null or empty
+      if (pusherChannelName == null || pusherChannelName.isEmpty) {
+        debugPrint("Error: pusherChannelName is null or empty");
+        showErrorToast("Channel name is missing.");
+        return; // Exit if the channel name is missing
+      }
+
+      // Debugging the availability of the method
+      debugPrint(
+          "subscribeToChannel method: ${js.context['subscribeToChannel']}");
+
+      // Initialize Pusher with JavaScript interop
+      js.context.callMethod('subscribeToChannel', [
+        pusherChannelName, // Pusher channel name
+        js.allowInterop((eventData) {
+          // Null check on eventData before processing
+          if (eventData == null) {
+            debugPrint("Error: eventData is null");
+            return; // Exit if eventData is null
           }
+
+          debugPrint("Raw Event Data: $eventData");
+
+          // Check if the eventData is a Map and contains the 'data' key
+          if (eventData is Map) {
+            debugPrint("Event Data Keys: ${eventData.keys}");
+            if (eventData.containsKey('data')) {
+              debugPrint("Event data received: ${eventData['data']}");
+            } else {
+              debugPrint("No 'data' key in event data.");
+            }
+          } else {
+            debugPrint("Unexpected event data format: $eventData");
+          }
+
+          // Trigger the callback to process the event data
+          onPusherEventTrigger(eventData);
+        })
+      ]);
+
+      debugPrint("Pusher setup completed successfully.");
+    } catch (e) {
+      // Catch any errors during the setup
+      debugPrint("Error in Pusher setup: $e");
+      showErrorToast("Pusher initialization failed.");
+    }
+  }
+
+  void onPusherEventTrigger(dynamic data) {
+    setState(() {
+      // If data is present, process the event
+      if (data != null) {
+        var decodedData = jsonDecode(data['data']);
+        debugPrint("Event data received: ${decodedData.toString()}");
+
+        // Check for the necessary fields or event identifiers in the data
+        if (decodedData.containsKey('eventId')) {
+          controller.updateListWithImageUrl(
+              ItineraryResultModel.fromJson(decodedData));
         } else {
-          debugPrint("Polling failed with status code: ${response.statusCode}");
+          // Handle other types of events or data here
+          debugPrint("Unhandled event data: $decodedData");
         }
-      } catch (e) {
-        debugPrint("Error during polling: $e");
       }
     });
   }
@@ -183,18 +235,22 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
 
   Widget mobileContainer() {
     bool isHowToReachExpended = true;
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     return Scaffold(
       backgroundColor: Colors.white,
-      key: _scaffoldKey,
+      key: scaffoldKey,
       drawer: FilterDrawer(
         controller.itineraryRequest.value,
         performFilter: (request) {
-          controller.getItinerary(request);
-          controller.tripList.clear();
-          // setupPusher(controller.eventId.value);
+          print('Performing filter logic');
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            print('Updating state after build');
+            controller.getItinerary(request);
+            controller.tripList.clear();
+            setupPusher(controller.eventId.value);
+          });
         },
       ),
+
       // appBar: AppBar(
       //   backgroundColor: Theme.of(context).colorScheme.background,
       //   leading: GestureDetector(
@@ -225,7 +281,7 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
         backgroundColor: const Color.fromRGBO(57, 185, 111, 1),
         elevation: 0,
         onPressed: () {
-          _scaffoldKey.currentState?.openDrawer();
+          scaffoldKey.currentState!.openDrawer();
         },
         label: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
@@ -273,13 +329,10 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    trailing: Icon(isHowToReachExpended
-                        ? Icons.keyboard_arrow_down
-                        : Icons.keyboard_arrow_up),
                     onTap: () {
-                      setState(() {
-                        isHowToReachExpended = !isHowToReachExpended;
-                      });
+                      // setState(() {
+                      //   isHowToReachExpended = !isHowToReachExpended;
+                      // });
                     },
                   ),
                 ),
@@ -293,39 +346,23 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
               ],
             ),
             Divider(color: Theme.of(context).colorScheme.outline),
-            isHowToReachExpended
-                ? Obx(
-                    () => controller.tripList.isEmpty
-                        ? const Center(child: CircularProgressIndicator())
-                        : Expanded(
-                            child: ListView.builder(
-                              itemCount: controller.tripList.length,
-                              itemBuilder: (c, index) => ItineraryTile(
-                                itineraryData: controller.tripList[index],
-                              ),
-                            ),
-                          ),
-                  )
-                : Wrap(
-                    runSpacing: 8.h,
-                    spacing: 8.w,
-                    children: [
-                      textWithIcon(context, Assets.assetsCumpass,
-                          widget.request.destinations.join(' | ')),
-                      textWithIcon(context, Assets.assetsDate,
-                          widget.request.startDate.toString().substring(0, 10)),
-                      textWithIcon(context, Assets.assetsDate,
-                          widget.request.endDate.toString().substring(0, 10)),
-                      textWithIcon(context, Assets.assetsFamityVacation,
-                          [widget.request.tripType].join(' | ')),
-                      textWithIcon(context, Assets.assetsAmount,
-                          "${widget.request.budget}"),
-                      textWithIcon(context, Assets.assetsThaiFood,
-                          widget.request.food.join(' | ')),
-                      textWithIcon(context, Assets.assetsCar,
-                          widget.request.modeOfTransport.join(' | ')),
-                    ],
-                  ),
+            // Obx(
+            //         () => controller.tripList.isEmpty
+            //             ? const Center(child: CircularProgressIndicator())
+            //             : Expanded(
+            //                 child: ListView.builder(
+            //                   itemCount: controller.tripList.length,
+            //                   itemBuilder: (c, index) => ItineraryTile(
+            //                     itineraryData: controller.tripList[index],
+            //                   ),
+            //                 ),
+            //               ),
+            //       ),
+
+            const Center(
+              child: Text('Data here'),
+            ),
+
             if (!isHowToReachExpended)
               Divider(color: Theme.of(context).colorScheme.outline),
           ],
@@ -335,6 +372,7 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
   }
 
   Widget DesktopContainer() {
+    debugPrint("Building Container widget...");
     String Date = '$startDate → $endDate';
 
     return Column(
@@ -449,7 +487,7 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
                           padding: const EdgeInsets.only(left: 15),
                           child: CustomCheckboxList(
                               items: items,
-                              preCheckedItems: [
+                              preCheckedItems: const [
                                 'Family vacation',
                                 'Cultural Exploration',
                                 'Honeymoon',
@@ -464,7 +502,7 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
                         Padding(
                           padding: const EdgeInsets.only(left: 20.0),
                           child: BudgetContainer(
-                              initialValue: budget,
+                              initialValue: widget.request.budget.toString(),
                               onValueUpdate: (value) {
                                 budget = value;
                               }),

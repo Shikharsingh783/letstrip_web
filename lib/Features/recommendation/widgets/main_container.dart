@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:letstrip/Features/recommendation/screens/recommandation_result_screen.dart';
 import 'package:letstrip/Features/recommendation/widgets/recommandation_container.dart';
 import 'package:letstrip/common_widgets/budget_container.dart';
@@ -468,14 +468,13 @@ class _MainContainerState extends State<MainContainer> {
                     decoration: BoxDecoration(
                         color: const Color.fromRGBO(223, 246, 234, 1),
                         borderRadius: BorderRadius.circular(12)),
-                    child: Center(
-                      child: Text(
-                        'Next',
-                        style: GoogleFonts.raleway(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: const Color.fromRGBO(177, 177, 177, 1)),
-                      ),
+                    child: const Center(
+                      child: Text('Next',
+                          style: TextStyle(
+                              fontFamily: 'Raleway',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Color.fromRGBO(177, 177, 177, 1))),
                     ),
                   ),
                 ),
@@ -854,23 +853,6 @@ class _MainContainerState extends State<MainContainer> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            // ItineraryRequest request = ItineraryRequest(
-                            //     destinations: ["Lucknow"],
-                            //     tripType: "Family vacation",
-                            //     budget: 404000,
-                            //     startDate: "Nov 29, 2024",
-                            //     endDate: "Nov 30, 2024",
-                            //     originCity: "",
-                            //     departureCity: "",
-                            //     food: [],
-                            //     singleFoodPreferred: false,
-                            //     modeOfTransport: [],
-                            //     customText: "",
-                            //     accommodationType: [],
-                            //     hotelCategory: 0,
-                            //     travelingWithKid: false,
-                            //     addLocalEvents: false,
-                            //     activityPreferences: []);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

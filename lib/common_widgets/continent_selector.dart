@@ -233,7 +233,10 @@ class _ContinentSelectorState extends State<ContinentSelector> {
         Wrap(
           runSpacing: 12,
           children: [
-            if (isNAmericaSelected) _buildSelectedContinent('North America'),
+            if (isNAmericaSelected)
+              _buildSelectedContinent(
+                'North America',
+              ),
             if (isSAmericaSelected) _buildSelectedContinent('South America'),
             if (isEuropeSelected) _buildSelectedContinent('Europe'),
             if (isAfricaSelected) _buildSelectedContinent('Africa'),
@@ -250,13 +253,13 @@ class _ContinentSelectorState extends State<ContinentSelector> {
         padding: padSym(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
-            color: Theme.of(context).colorScheme.primaryContainer),
+            color: Color.fromRGBO(223, 246, 234, 1)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
                 radius: ScreenUtil().radius(8),
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Color.fromRGBO(57, 185, 111, 1),
                 child: Icon(
                   Icons.done_rounded,
                   size: 10,

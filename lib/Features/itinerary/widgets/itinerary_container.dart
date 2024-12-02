@@ -3,25 +3,26 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:letstrip/Features/itinerary/screen/itinerary_result_screen.dart';
 
 import 'package:letstrip/common_widgets/budget_container.dart';
 import 'package:letstrip/common_widgets/build_button.dart';
 import 'package:letstrip/common_widgets/date_range_selector.dart';
+
 import 'package:letstrip/common_widgets/helper_widget.dart';
+
 import 'package:letstrip/common_widgets/multi_option_dropdown.dart';
 
 import 'package:letstrip/common_widgets/multi_select_dropdown.dart';
 import 'package:letstrip/common_widgets/textfeild.dart';
 
 import 'package:letstrip/generated/assets.dart';
-import 'package:letstrip/models/base_response.dart';
-import 'package:letstrip/models/dummy_response_model.dart';
 
 import 'package:letstrip/models/itinerary_request.dart';
 import 'package:letstrip/models/location_model.dart';
-import 'package:letstrip/network/environment.dart';
+
 import 'package:letstrip/repositories/auth_repo.dart';
 
 import 'package:letstrip/repositories/itinerary_repo.dart';
@@ -93,11 +94,278 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
   }
 
   final AuthService authService = AuthService();
+  Widget _dialogContent = Container();
 
   @override
   void initState() {
     super.initState();
     Get.put(SearchLocationController());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showCustomWelcomeDialog();
+    });
+  }
+
+  void _showCustomWelcomeDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        final double width = MediaQuery.of(context).size.width;
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.transparent,
+          child: width < 950 ? mobileDialog() : desktopDialog(),
+        );
+      },
+    );
+  }
+
+  Widget mobileDialog() {
+    return Container(
+      height: 337,
+      width: 285,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.none, // Ensure poppers are not clipped
+      child: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              Stack(
+                children: [
+                  Image.asset(
+                    'assets/Group 1000008021.png',
+                    height: 131,
+                    width: 280,
+                  ),
+                  Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Image.asset(
+                        'assets/Group 1000008019.png',
+                        height: 66,
+                      )),
+                  Positioned(
+                      top: 10,
+                      right: 10,
+                      child: Image.asset(
+                        'assets/Group (1).png',
+                        height: 66,
+                      )),
+                  Positioned(
+                      top: 30,
+                      right: 10,
+                      child: Image.asset(
+                        'assets/Group 1000008020.png',
+                        height: 66,
+                      )),
+                  Positioned(
+                      top: 50,
+                      left: 10,
+                      child: Image.asset(
+                        'assets/Group (2).png',
+                        height: 66,
+                      )),
+                ],
+              ),
+              Text(
+                "Congratulations",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.raleway(
+                    color: const Color.fromRGBO(57, 185, 111, 1),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 21),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "You have 3 months subscription\n has begun!!",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.raleway(
+                    color: const Color.fromRGBO(102, 102, 102, 1),
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(57, 185, 111, 1),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                  child: Text(
+                    "Lets's Go",
+                    style: GoogleFonts.raleway(
+                        fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+              top: 0,
+              right: 0,
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset('assets/Group 1000008017.png')))
+        ],
+      ),
+    );
+  }
+
+  Widget desktopDialog() {
+    final w = MediaQuery.of(context).size.width;
+    return Container(
+      height: w * 0.31,
+      width: w * 0.5,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.none, // Ensure poppers are not clipped
+      child: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              //left
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: w * 0.03),
+                        child: Image.asset(
+                          'assets/Group 1000008026.png',
+                          height: w * 0.1,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      SizedBox(
+                        height: w * 0.02,
+                      ),
+                      Image.asset(
+                        'assets/Group (3).png',
+                        height: w * 0.03,
+                        fit: BoxFit.fill,
+                      ),
+                    ],
+                  ),
+
+                  //center
+                  Padding(
+                    padding: EdgeInsets.only(right: w * 0.02),
+                    child: Image.asset(
+                      'assets/Group 1000008024.png',
+                      height: w * 0.13,
+                      width: w * 0.15,
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+
+                  //right
+                  Row(
+                    children: [
+                      Image.asset(
+                        'assets/Group (4).png',
+                        height: w * 0.03,
+                        fit: BoxFit.fill,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(right: w * 0.02, top: 35),
+                        child: Image.asset(
+                          'assets/Group 1000008025.png',
+                          height: w * 0.1,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Text(
+                "Congratulations",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.raleway(
+                    color: const Color.fromRGBO(57, 185, 111, 1),
+                    fontWeight: FontWeight.w700,
+                    fontSize: w * 0.02),
+              ),
+              SizedBox(height: w * 0.001),
+              Text(
+                "You have 3 months subscription has begun!!",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.raleway(
+                    color: const Color.fromRGBO(111, 108, 144, 1),
+                    fontWeight: FontWeight.w500,
+                    fontSize: w * 0.016),
+              ),
+              const SizedBox(height: 15),
+              Container(
+                width: w * 0.5,
+                height: w * 0.035,
+                decoration: BoxDecoration(
+                    color: const Color.fromRGBO(57, 185, 111, 1),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Center(
+                  child: Text(
+                    "Let's Go",
+                    style: GoogleFonts.raleway(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Positioned(
+              top: 0,
+              right: 0,
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset('assets/Group 1000008017.png')))
+        ],
+      ),
+    );
   }
 
   // final url = 'https://itinerary.letstrip.world/api/v1/production/itinerary';
@@ -397,8 +665,7 @@ class _ItineraryContainerState extends State<ItineraryContainer> {
                                 travelingWithKid: false,
                                 addLocalEvents: false,
                                 activityPreferences: []);
-                            print('on tap');
-                            itineraryRepository.getItinerary(request.toJson());
+                            // itineraryRepository.getItinerary(request.toJson());
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(

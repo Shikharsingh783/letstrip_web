@@ -62,17 +62,25 @@ class _FilterDrawerState extends State<FilterDrawer> {
   @override
   void initState() {
     super.initState();
-    filterRequest = widget.request;
-    budget = widget.request.budget.toString();
-    dateRange = "${widget.request.startDate}\u2192${widget.request.endDate}";
-    destinations = widget.request.destinations;
-    foods = widget.request.food;
-    tripType = widget.request.tripType;
-    travel = widget.request.modeOfTransport;
-    singleFoodPref = widget.request.singleFoodPreferred;
-    textController.text = widget.request.customText;
-    originCity = widget.request.originCity;
-    departureCity = widget.request.departureCity;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Delay the state update here
+      if (widget.request != null) {
+        filterRequest = widget.request;
+
+        // Initialize variables with values from the widget's request.
+        budget = widget.request.budget.toString();
+        dateRange =
+            "${widget.request.startDate ?? ''}\u2192${widget.request.endDate ?? ''}";
+        destinations = widget.request.destinations;
+        foods = widget.request.food;
+        tripType = widget.request.tripType;
+        travel = widget.request.modeOfTransport;
+        singleFoodPref = widget.request.singleFoodPreferred;
+        textController.text = widget.request.customText;
+        originCity = widget.request.originCity;
+        departureCity = widget.request.departureCity;
+      }
+    });
   }
 
   @override
@@ -115,10 +123,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
                     title: const Text(
                       "Basic",
                       style: TextStyle(
-                          color: Color.fromRGBO(57, 185, 111, 1),
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          fontFamily: 'Raleway'),
+                        color: Color.fromRGBO(57, 185, 111, 1),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Raleway',
+                      ),
                     ),
                     children: [
                       SizedBox(
@@ -131,10 +140,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
                               const Text(
                                 "Select Destinations*",
                                 style: TextStyle(
-                                    color: Color.fromRGBO(102, 102, 102, 1),
-                                    fontFamily: 'Raleway',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15),
+                                  color: Color.fromRGBO(102, 102, 102, 1),
+                                  fontFamily: 'Raleway',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
                               ),
                               boxH8(),
                               Wrap(
@@ -146,11 +156,12 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                             padSym(horizontal: 12, vertical: 8),
                                         margin: padOnly(right: 12),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                                ScreenUtil().radius(24)),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary),
+                                          borderRadius: BorderRadius.circular(
+                                              ScreenUtil().radius(24)),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
@@ -163,27 +174,35 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                             boxW8(),
                                             GestureDetector(
                                               onTap: () {
-                                                setState(() {
-                                                  if (widget
-                                                      .request.destinations
-                                                      .contains(e)) return;
-                                                  destinations.remove(e);
+                                                // Delay the state update after the frame
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  setState(() {
+                                                    if (widget
+                                                        .request.destinations
+                                                        .contains(e)) return;
+                                                    destinations.remove(e);
+                                                  });
                                                 });
                                               },
-                                              child: Icon(Icons.clear,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .background),
-                                            )
+                                              child: Icon(
+                                                Icons.clear,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .background,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       )),
                                   GestureDetector(
-                                      onTap: _showBottomSheet,
-                                      child: Transform.translate(
-                                          offset: const Offset(0, -12),
-                                          child: vector(Assets.assetsAddIcon,
-                                              width: 56.w, height: 56.w)))
+                                    onTap: _showBottomSheet,
+                                    child: Transform.translate(
+                                      offset: const Offset(0, -12),
+                                      child: vector(Assets.assetsAddIcon,
+                                          width: 56.w, height: 56.w),
+                                    ),
+                                  ),
                                 ],
                               ),
                               Divider(
@@ -195,10 +214,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                 title: const Text(
                                   "Choose your trip type",
                                   style: TextStyle(
-                                      color: Color.fromRGBO(102, 102, 102, 1),
-                                      fontFamily: 'Raleway',
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 15),
+                                    color: Color.fromRGBO(102, 102, 102, 1),
+                                    fontFamily: 'Raleway',
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                  ),
                                 ),
                                 children: [
                                   SizedBox(
@@ -236,25 +256,44 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                                   });
                                                 },
                                                 child: Container(
-                                                    padding: padSym(
-                                                        horizontal: 20,
-                                                        vertical: 10),
-                                                    decoration: BoxDecoration(
-                                                        color: tripType.contains(e.value)
-                                                            ? const Color.fromRGBO(
-                                                                57, 185, 111, 1)
-                                                            : Colors.white,
-                                                        borderRadius: BorderRadius.circular(
+                                                  padding: padSym(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: tripType
+                                                            .contains(e.value)
+                                                        ? const Color.fromRGBO(
+                                                            57, 185, 111, 1)
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
                                                             ScreenUtil()
                                                                 .radius(24)),
-                                                        border: Border.all(
-                                                            color: tripType.contains(e.value)
-                                                                ? Colors
-                                                                    .transparent
-                                                                : Theme.of(context)
-                                                                    .colorScheme
-                                                                    .outline)),
-                                                    child: Text(e.value, style: AppTextTheme.labelStyle.copyWith(color: tripType.contains(e.value) ? Theme.of(context).colorScheme.background : Theme.of(context).colorScheme.onSurface))),
+                                                    border: Border.all(
+                                                      color: tripType
+                                                              .contains(e.value)
+                                                          ? Colors.transparent
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .outline,
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    e.value,
+                                                    style: AppTextTheme
+                                                        .labelStyle
+                                                        .copyWith(
+                                                      color: tripType
+                                                              .contains(e.value)
+                                                          ? Theme.of(context)
+                                                              .colorScheme
+                                                              .background
+                                                          : Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurface,
+                                                    ),
+                                                  ),
+                                                ),
                                               ))
                                         ],
                                       ),
@@ -265,19 +304,21 @@ class _FilterDrawerState extends State<FilterDrawer> {
                               Divider(
                                   color: Theme.of(context).colorScheme.outline),
                               BudgetContainer(
-                                  showBorder: false,
-                                  initialValue: budget,
-                                  onValueUpdate: (value) {
-                                    budget = value;
-                                  }),
+                                showBorder: false,
+                                initialValue: budget,
+                                onValueUpdate: (value) {
+                                  budget = value;
+                                },
+                              ),
                               Divider(
                                   color: Theme.of(context).colorScheme.outline),
                               DateRangeSelector(
-                                  initialValue: dateRange,
-                                  isSmallText: true,
-                                  onDateRangeSelect: (range) {
-                                    dateRange = range;
-                                  })
+                                initialValue: dateRange,
+                                isSmallText: true,
+                                onDateRangeSelect: (range) {
+                                  dateRange = range;
+                                },
+                              ),
                             ],
                           ),
                         ),
@@ -347,7 +388,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                                 //departureCity = "";
                                               });
                                             },
-                                            child: Icon(Icons.clear,
+                                            child: const Icon(Icons.clear,
                                                 color: Colors.white),
                                           )
                                         ],
@@ -355,7 +396,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                     ),
                               Divider(
                                   color: Theme.of(context).colorScheme.outline),
-                              Text("End your trip in a specific city?",
+                              const Text("End your trip in a specific city?",
                                   style: TextStyle(
                                       color: Color.fromRGBO(102, 102, 102, 1),
                                       fontFamily: 'Raleway',
@@ -406,6 +447,10 @@ class _FilterDrawerState extends State<FilterDrawer> {
 
                               Divider(
                                   color: Theme.of(context).colorScheme.outline),
+
+                              //accomocadation
+                              Divider(
+                                  color: Theme.of(context).colorScheme.outline),
                               ExpansionTileCard(
                                 baseColor: Colors.white,
                                 elevation: 0,
@@ -431,104 +476,23 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                           ...itineraryActivity.map(
                                             (e) => GestureDetector(
                                               onTap: () {
-                                                final controller = Get.find<
-                                                    ActivityPreferenceController>();
-                                                controller
-                                                    .toggleActivity(e.value);
+                                                // Delay the state update to avoid triggering it during the build phase
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  final controller = Get.find<
+                                                      ActivityPreferenceController>();
+                                                  controller
+                                                      .toggleActivity(e.value);
+                                                });
                                               },
-                                              child: Obx(() {
-                                                final controller = Get.find<
-                                                    ActivityPreferenceController>();
-                                                final isSelected = controller
-                                                    .selectedActivities
-                                                    .contains(e.value);
-
-                                                return Container(
-                                                  padding: padSym(
-                                                      horizontal: 20,
-                                                      vertical: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Color.fromRGBO(
-                                                            57, 185, 111, 1)
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      ScreenUtil().radius(24),
-                                                    ),
-                                                    border: Border.all(
-                                                      color: isSelected
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .primary
-                                                          : Theme.of(context)
-                                                              .colorScheme
-                                                              .outline,
-                                                    ),
-                                                  ),
-                                                  child: Text(
-                                                    e.value,
-                                                    style: TextStyle(
-                                                      color: isSelected
-                                                          ? Colors.white
-                                                          : const Color
-                                                              .fromRGBO(
-                                                              102, 102, 102, 1),
-                                                      fontFamily: 'Raleway',
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
-                                                    ),
-                                                  ),
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              //accomocadation
-                              Divider(
-                                  color: Theme.of(context).colorScheme.outline),
-                              ExpansionTileCard(
-                                baseColor: Colors.white,
-                                elevation: 0,
-                                expandedColor: Colors.white,
-                                title: const Text(
-                                  "Accommodation Preferences",
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(102, 102, 102, 1),
-                                    fontFamily: 'Raleway',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                children: [
-                                  SizedBox(
-                                    width: screenWidth(),
-                                    child: Padding(
-                                      padding: padAll(),
-                                      child: Wrap(
-                                        runSpacing: 8,
-                                        spacing: 8,
-                                        children: [
-                                          ...accommodations.map((e) =>
-                                              GestureDetector(
-                                                onTap: () {
-                                                  final controller = Get.find<
-                                                      AccommodationPreferenceController>();
-                                                  controller.toggleItem(e);
-                                                },
-                                                child: Obx(() {
-                                                  final controller = Get.find<
-                                                      AccommodationPreferenceController>();
+                                              child: GetBuilder<
+                                                  ActivityPreferenceController>(
+                                                builder: (controller) {
+                                                  // Check if the activity is selected or not
                                                   final isSelected = controller
-                                                      .stay
-                                                      .contains(e);
+                                                      .selectedActivities
+                                                      .contains(e.value);
+
                                                   return Container(
                                                     padding: padSym(
                                                         horizontal: 20,
@@ -553,7 +517,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                                       ),
                                                     ),
                                                     child: Text(
-                                                      e,
+                                                      e.value,
                                                       style: TextStyle(
                                                         color: isSelected
                                                             ? Colors.white
@@ -567,14 +531,17 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                                       ),
                                                     ),
                                                   );
-                                                }),
-                                              ))
+                                                },
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
+
                               Divider(
                                   color: Theme.of(context).colorScheme.outline),
                               const Row(
@@ -638,55 +605,63 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                           ...itineraryFood.map(
                                             (e) => GestureDetector(
                                               onTap: () {
-                                                final controller = Get.find<
-                                                    FoodPreferenceController>();
-                                                controller.toggleFood(e.value);
+                                                // Delay the state update to avoid triggering it during the build phase
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  final controller = Get.find<
+                                                      FoodPreferenceController>();
+                                                  controller
+                                                      .toggleFood(e.value);
+                                                });
                                               },
-                                              child: Obx(() {
-                                                final controller = Get.find<
-                                                    FoodPreferenceController>();
-                                                final isSelected = controller
-                                                    .foods
-                                                    .contains(e.value);
-                                                return Container(
-                                                  padding: padSym(
-                                                      horizontal: 20,
-                                                      vertical: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Color.fromARGB(
-                                                            57, 185, 111, 1)
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            ScreenUtil()
-                                                                .radius(24)),
-                                                    border: Border.all(
+                                              child: GetBuilder<
+                                                  FoodPreferenceController>(
+                                                builder: (controller) {
+                                                  // Check if the food is selected or not
+                                                  final isSelected = controller
+                                                      .foods
+                                                      .contains(e.value);
+
+                                                  return Container(
+                                                    padding: padSym(
+                                                        horizontal: 20,
+                                                        vertical: 10),
+                                                    decoration: BoxDecoration(
                                                       color: isSelected
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .primary
-                                                          : Theme.of(context)
-                                                              .colorScheme
-                                                              .outline,
+                                                          ? Color.fromARGB(
+                                                              57, 185, 111, 1)
+                                                          : Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              ScreenUtil()
+                                                                  .radius(24)),
+                                                      border: Border.all(
+                                                        color: isSelected
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                            : Theme.of(context)
+                                                                .colorScheme
+                                                                .outline,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  child: Text(
-                                                    e.value,
-                                                    style: TextStyle(
-                                                      color: isSelected
-                                                          ? Colors.white
-                                                          : const Color
-                                                              .fromRGBO(
-                                                              102, 102, 102, 1),
-                                                      fontFamily: 'Raleway',
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400,
+                                                    child: Text(
+                                                      e.value,
+                                                      style: TextStyle(
+                                                        color: isSelected
+                                                            ? Colors.white
+                                                            : const Color
+                                                                .fromRGBO(102,
+                                                                102, 102, 1),
+                                                        fontFamily: 'Raleway',
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
                                                     ),
-                                                  ),
-                                                );
-                                              }),
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -749,41 +724,48 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                           ...itineraryTravel.map(
                                             (e) => GestureDetector(
                                               onTap: () {
-                                                final controller = Get.find<
-                                                    TravelPreferenceController>();
-                                                controller
-                                                    .toggleTravel(e.value);
+                                                // Delay the state update to avoid triggering it during the build phase
+                                                WidgetsBinding.instance
+                                                    .addPostFrameCallback((_) {
+                                                  final controller = Get.find<
+                                                      TravelPreferenceController>();
+                                                  controller
+                                                      .toggleTravel(e.value);
+                                                });
                                               },
-                                              child: Obx(() {
-                                                final controller = Get.find<
-                                                    TravelPreferenceController>();
-                                                final isSelected = controller
-                                                    .travels
-                                                    .contains(e.value);
-                                                return Container(
-                                                  padding: padSym(
-                                                      horizontal: 20,
-                                                      vertical: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: isSelected
-                                                        ? Color.fromRGBO(
-                                                            57, 185, 111, 1)
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                      ScreenUtil().radius(24),
-                                                    ),
-                                                    border: Border.all(
+                                              child: GetBuilder<
+                                                  TravelPreferenceController>(
+                                                builder: (controller) {
+                                                  // Check if the travel preference is selected or not
+                                                  final isSelected = controller
+                                                      .travels
+                                                      .contains(e.value);
+
+                                                  return Container(
+                                                    padding: padSym(
+                                                        horizontal: 20,
+                                                        vertical: 10),
+                                                    decoration: BoxDecoration(
                                                       color: isSelected
-                                                          ? Theme.of(context)
-                                                              .colorScheme
-                                                              .primary
-                                                          : Theme.of(context)
-                                                              .colorScheme
-                                                              .outline,
+                                                          ? Color.fromRGBO(
+                                                              57, 185, 111, 1)
+                                                          : Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              ScreenUtil()
+                                                                  .radius(24)),
+                                                      border: Border.all(
+                                                        color: isSelected
+                                                            ? Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                            : Theme.of(context)
+                                                                .colorScheme
+                                                                .outline,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  child: Text(e.value,
+                                                    child: Text(
+                                                      e.value,
                                                       style: TextStyle(
                                                         color: isSelected
                                                             ? Colors.white
@@ -794,9 +776,11 @@ class _FilterDrawerState extends State<FilterDrawer> {
                                                         fontSize: 14,
                                                         fontWeight:
                                                             FontWeight.w400,
-                                                      )),
-                                                );
-                                              }),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           ),
                                         ],
