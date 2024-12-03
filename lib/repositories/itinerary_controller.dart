@@ -14,7 +14,7 @@ class ItineraryController extends GetxController {
   var eventId = ''.obs;
   var itineraryRequest = ItineraryRequest().obs;
 
-  final tripList = <ItineraryResultModel>[].obs;
+  late final tripList = <ItineraryResultModel>[].obs;
 
   Future<void> getItinerary(ItineraryRequest recommendationRequest) async {
     itineraryRequest.value = recommendationRequest;

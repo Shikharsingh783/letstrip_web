@@ -11,6 +11,7 @@ import 'package:letstrip/common_widgets/custom_toggle.dart';
 import 'package:letstrip/common_widgets/date_range_selector.dart';
 import 'package:letstrip/common_widgets/filter_drawer.dart';
 import 'package:letstrip/common_widgets/helper_widget.dart';
+import 'package:letstrip/common_widgets/itinerary_desktop_tile.dart';
 import 'package:letstrip/common_widgets/itinerary_tile.dart';
 import 'package:letstrip/common_widgets/star_rating.dart';
 import 'package:letstrip/generated/assets.dart';
@@ -224,6 +225,53 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
       }
     });
   }
+
+  final itineraryData = ItineraryResultModel(
+    day: "1",
+    time: "Morning",
+    activityName: "Explore Old Delhi",
+    reason:
+        "Begin your Delhi adventure in Old Delhi, a captivating blend of history, culture, and vibrant markets. Immerse yourselves in the bustling streets, marvel at the architectural wonders, and soak in the atmosphere of this ancient city. Experience the charm of this historic area with its narrow lanes, majestic monuments, and bustling bazaars.",
+    ticketLink: "",
+    ticketCost: "Free",
+    howToReach:
+        "Old Delhi is easily accessible by metro. Take the yellow line to Chandni Chowk station. From there, you can explore the area on foot. Auto-rickshaws are also readily available for shorter distances.",
+    // activityGoogleLink: "https://www.google.com/maps?q=Old+Delhi",
+    lunch: "Karim's",
+    lunchReason:
+        "Karim's is a legendary Old Delhi establishment renowned for its Mughlai cuisine. It's a great place to sample authentic and delicious North Indian dishes in a historic setting.",
+    lunchRating: "4.2",
+    lunchLink: "https://www.karims.net/",
+    lunchCost: "1000",
+    // lunchGoogleLink: "https://www.google.com/maps?q=Karim%27s+Old+Delhi",
+    timeLunch: "Afternoon",
+    activityNameLunch: "Jama Masjid",
+    reasonLunch:
+        "Visit the magnificent Jama Masjid, one of India's largest mosques. Admire its stunning architecture and peaceful atmosphere. Witness the grandeur of this historical landmark.",
+    ticketLinkLunch: "",
+    ticketCostLunch: "Free",
+    howToReachLunch:
+        "Jama Masjid is within walking distance of Karim's, making it a convenient next stop on your Old Delhi exploration.",
+    ratingLunch: "4.5",
+    // eveningGoogleLink: "https://www.google.com/maps?q=Jama+Masjid",
+    dinner: "Al Jawahar",
+    dinnerReason:
+        "Another Old Delhi culinary gem, Al Jawahar offers delicious and authentic Mughlai food at reasonable prices. Enjoy a flavorful dinner in this iconic restaurant.",
+    dinnerRating: "4.3",
+    dinnerLink: "https://aljawahar.in/",
+    dinnerCost: "800",
+    // dinnerGoogleLink:
+    //     "https://www.google.com/maps?q=Al+Jawahar+Old+Delhi",
+    stayCost: "N/A",
+    // stayCity: "Delhi",
+    // checkInDate: "2024-12-04",
+    // checkOutDate: "2024-12-05",
+    stay: "N/A",
+    // stayImageLink: "N/A",
+    stayLink: "N/A",
+    stayRating: "N/A",
+    // stayGoogleLink: "N/A",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -782,26 +830,14 @@ class _ItineraryResultContainerState extends State<ItineraryResultContainer> {
                 flex: 5,
                 child: SingleChildScrollView(
                   child: Container(
+                    margin: EdgeInsets.all(10),
                     color: Colors.white,
-                    child: const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.accessibility,
-                          size: 50,
-                          color: Colors.black,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Accessibility Settings',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                        SizedBox(height: 20),
-                        Text(
-                          'Additional content for the right panel goes here.',
-                        ),
-                      ],
-                    ),
+                    padding: EdgeInsets.all(10),
+                    child: itineraryData != null
+                        ? ItineraryDesktopTile(
+                            itineraryData: itineraryData,
+                          )
+                        : Center(child: Text('No data available')),
                   ),
                 ),
               ),

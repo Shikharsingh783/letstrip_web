@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:letstrip/generated/assets.dart';
+import 'package:letstrip/models/recommandation_response.dart';
+import 'package:letstrip/models/recommendation_request.dart';
 import 'package:letstrip/theme/text_style.dart';
+import 'package:letstrip/utils/extension.dart';
+import 'package:letstrip/utils/navigation.dart';
 import 'package:letstrip/utils/padding_helper.dart';
 import 'package:letstrip/utils/size_config.dart';
 import 'package:letstrip/utils/utilities.dart';
@@ -141,4 +145,96 @@ Widget vectorNetwork(String asset,
     Color? color}) {
   return SvgPicture.network(asset,
       width: width, height: height, fit: fit, color: color);
+}
+
+Widget tripDetailCard(
+  BuildContext context,
+  RecommendationResponse tripDetailCard,
+  RecommendationRequest recommendationRequest,
+) {
+  final destinations = tripDetailCard.getDestinations(recommendationRequest);
+  final nameWidgets = List<Widget>.empty(growable: true);
+  for (final (index, destination) in destinations.indexed) {
+    nameWidgets.add(Text(
+      destination,
+      style: AppTextTheme.labelBoldStyle,
+    ));
+
+    if (index != destinations.length - 1) {
+      nameWidgets.add(Icon(
+        Icons.keyboard_arrow_right_rounded,
+        color: Color(0xFF959595),
+        size: 20,
+      ));
+    }
+  }
+
+  return GestureDetector(
+    onTap: () {
+      // moveTo(
+      //     screenName: TripDetailScreen(
+      //   recommendationResponse: tripDetailCard,
+      //   recommendationRequest: recommendationRequest,
+      // ));
+    },
+    child: Card(
+      elevation: 2,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
+          borderRadius: BorderRadius.circular(ScreenUtil().radius(12)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: screenWidth(),
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(ScreenUtil().radius(12)),
+                  topRight: Radius.circular(ScreenUtil().radius(12)),
+                ),
+                child: tripDetailCard.imageUrl.isNotEmpty
+                    ? loadImageWithThumbnail(
+                        tripDetailCard.imageUrl[0].urls.thumb.toString(),
+                        tripDetailCard.imageUrl[0].urls.full.toString(),
+                        height: 100.h,
+                        fit: BoxFit.cover)
+                    : loadImage("", height: 100.h, fit: BoxFit.cover),
+              ),
+            ),
+            Padding(
+              padding: padSym(horizontal: 8.w, vertical: 4.h),
+              child: Text(
+                  "${tripDetailCard.totalCostOfJourney.replaceFirst(" INR", "")}",
+                  style: AppTextTheme.captionMediumStyleGrey),
+            ),
+            Padding(
+              padding: padSym(horizontal: 8.w),
+              // child: Text(
+              //     recommendationRequest.typeOfTravel == "Domestic"
+              // ? tripDetailCard.destinationName
+              //         : tripDetailCard.countryName,
+              //     maxLines: 1,
+              //     overflow: TextOverflow.ellipsis,
+              //     style: AppTextTheme.subtitleRHBoldStyle),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: nameWidgets,
+              ),
+            ),
+            boxH4(),
+            Padding(
+              padding: padSym(horizontal: 8.w),
+              child: Text(tripDetailCard.reasonToVisit,
+                  style: AppTextTheme.captionStyle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis),
+            ),
+            boxH8()
+          ],
+        ),
+      ),
+    ),
+  );
 }
