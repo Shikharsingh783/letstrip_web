@@ -10,7 +10,8 @@ class UnsplashRepo {
     ),
   );
 
-  Future<List<Photo>> searchImages(String country) async {
+  // Method to fetch images and include photographer info
+  Future<List<Map<String, dynamic>>> searchImages(String country) async {
     try {
       final List<Photo> photos = await client.photos
           .random(
@@ -20,14 +21,16 @@ class UnsplashRepo {
               contentFilter: ContentFilter.low)
           .goAndGet();
 
-      return photos;
+      return _extractPhotographerInfo(photos); // Extract photographer info
     } catch (ex) {
       log(ex.toString());
-      return repeatImage(5);
+      return _extractPhotographerInfo(repeatImage(5)); // Default image on error
     }
   }
 
-  Future<List<Photo>> searchItineraryImages(String country) async {
+  // Method for fetching itinerary images
+  Future<List<Map<String, dynamic>>> searchItineraryImages(
+      String country) async {
     try {
       final List<Photo> photos = await client.photos
           .random(
@@ -37,14 +40,15 @@ class UnsplashRepo {
               contentFilter: ContentFilter.low)
           .goAndGet();
 
-      return photos;
+      return _extractPhotographerInfo(photos); // Extract photographer info
     } catch (ex) {
       log(ex.toString());
-      return repeatImage(1);
+      return _extractPhotographerInfo(repeatImage(1)); // Default image on error
     }
   }
 
-  Future<List<Photo>> searchFoodImages(String country) async {
+  // Method for fetching food images
+  Future<List<Map<String, dynamic>>> searchFoodImages(String country) async {
     try {
       final List<Photo> photos = await client.photos
           .random(
@@ -54,13 +58,15 @@ class UnsplashRepo {
               contentFilter: ContentFilter.low)
           .goAndGet();
 
-      return photos;
+      return _extractPhotographerInfo(photos); // Extract photographer info
     } catch (ex) {
       log(ex.toString());
-      return repeatImage(2);
+      return _extractPhotographerInfo(repeatImage(2)); // Default image on error
     }
   }
-  Future<List<Photo>> searchHotelImages(String country) async {
+
+  // Method for fetching hotel images
+  Future<List<Map<String, dynamic>>> searchHotelImages(String country) async {
     try {
       final List<Photo> photos = await client.photos
           .random(
@@ -70,27 +76,39 @@ class UnsplashRepo {
               contentFilter: ContentFilter.low)
           .goAndGet();
 
-      return photos;
+      return _extractPhotographerInfo(photos); // Extract photographer info
     } catch (ex) {
       log(ex.toString());
-      return repeatImage(2);
+      return _extractPhotographerInfo(repeatImage(2)); // Default image on error
     }
   }
 
+  // Helper function to extract photographer info along with the photo
+  List<Map<String, dynamic>> _extractPhotographerInfo(List<Photo> photos) {
+    return photos.map((photo) {
+      return {
+        'photo': photo, // Full photo object
+        'name': photo.user?.name ?? 'Unknown', // Photographer's name
+        'profileUrl': photo.user?.links?.html.toString() ??
+            '', // Photographer's profile URL
+      };
+    }).toList();
+  }
+
+  // Helper function to generate a default image if there's an error
   List<Photo> repeatImage(int n) {
     List<Photo> result = [];
-    for (int i = 0; i > n; i++) {
-      result.add(photo);
+    for (int i = 0; i < n; i++) {
+      result.add(photo); // Adding the default photo object
     }
     return result;
   }
 
+  // Default photo object for error handling
   Photo photo = Photo(
     id: "1234567890",
     createdAt: DateTime.now(),
-    // Use DateTime.now() for current time
     updatedAt: DateTime.now().subtract(const Duration(days: 1)),
-    // Simulate update a day ago
     urls: PhotoUrls(
         raw: Uri.parse("https://example.com/photos/raw/1234567890.jpg"),
         full: Uri.parse(
@@ -103,7 +121,6 @@ class UnsplashRepo {
     height: 768,
     color: "#F0E6C7",
     blurHash: "LEHV6Uxp00JofQozjFj[~qR*00fR",
-    // Replace with a real blurHash value if desired
     downloads: 100,
     likes: 52,
     likedByUser: true,
@@ -149,8 +166,6 @@ class UnsplashRepo {
       name: "John Doe",
     ),
     currentUserCollections: const [],
-
-    // Replace with a list of Collection objects if applicable
     links: PhotoLinks(
       self: Uri.parse("https://example.com/photos/1234567890/download"),
       html: Uri.parse("https://example.com/photos/1234567890/download"),
@@ -158,9 +173,6 @@ class UnsplashRepo {
       downloadLocation:
           Uri.parse("https://example.com/photos/1234567890/download"),
     ),
-    tags: const [
-      Tag(title: "sunset"),
-      Tag(title: "mountains"),
-    ],
+    tags: const [Tag(title: "sunset"), Tag(title: "mountains")],
   );
 }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart'; // Import the GetX package
-import 'package:letstrip/Features/itinerary/screen/itinerary_screen.dart';
-import 'package:letstrip/Features/recommendation/screens/recommendation_screen.dart';
+import 'package:get/get.dart';
+import 'package:letstrip/Features/home/screens/home_screen.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         return const GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          home: ItineraryScreen(),
+          home: HomeScreen(),
         );
       },
     );

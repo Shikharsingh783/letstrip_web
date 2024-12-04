@@ -162,8 +162,8 @@ class ItineraryTileState extends State<ItineraryTile> {
                     borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
                     child: data.imageUrl!.isNotEmpty
                         ? loadImageWithThumbnail(
-                            data.imageUrl![0].urls.thumb.toString(),
-                            data.imageUrl![0].urls.full.toString(),
+                            data.imageUrl![0]['photo'].urls.thumb.toString(),
+                            data.imageUrl![0]['photo'].urls.full.toString(),
                           )
                         : loadImage("", height: 100.h, fit: BoxFit.cover),
                   ),
@@ -286,8 +286,8 @@ class ItineraryTileState extends State<ItineraryTile> {
                     borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
                     child: data.foodImages!.isNotEmpty
                         ? loadImageWithThumbnail(
-                            data.foodImages![0].urls.thumb.toString(),
-                            data.foodImages![0].urls.full.toString(),
+                            data.foodImages![0]['photo'].urls.thumb.toString(),
+                            data.foodImages![0]['photo'].urls.full.toString(),
                           )
                         : loadImage("", height: 100.h, fit: BoxFit.cover),
                   ),
@@ -378,8 +378,8 @@ class ItineraryTileState extends State<ItineraryTile> {
                           BorderRadius.circular(ScreenUtil().radius(4)),
                       child: data.imageUrl!.isNotEmpty
                           ? loadImageWithThumbnail(
-                              data.imageUrl![1].urls.thumb.toString(),
-                              data.imageUrl![1].urls.full.toString(),
+                              data.imageUrl![1]['photo'].urls.thumb.toString(),
+                              data.imageUrl![1]['photo'].urls.full.toString(),
                             )
                           : loadImage("", height: 100.h, fit: BoxFit.cover)),
                 ),
@@ -503,8 +503,9 @@ class ItineraryTileState extends State<ItineraryTile> {
                           BorderRadius.circular(ScreenUtil().radius(4)),
                       child: data.foodImages!.isNotEmpty
                           ? loadImageWithThumbnail(
-                              data.foodImages![1].urls.thumb.toString(),
-                              data.foodImages![1].urls.full.toString(),
+                              data.foodImages![1]['photo'].urls.thumb
+                                  .toString(),
+                              data.foodImages![1]['photo'].urls.full.toString(),
                             )
                           : loadImage("", height: 100.h, fit: BoxFit.cover)),
                 ),
@@ -596,8 +597,8 @@ class ItineraryTileState extends State<ItineraryTile> {
                           BorderRadius.circular(ScreenUtil().radius(4)),
                       child: data.foodImages!.isNotEmpty
                           ? loadImageWithThumbnail(
-                              data.stayImage![0].urls.thumb.toString(),
-                              data.stayImage![0].urls.full.toString(),
+                              data.stayImage![0]['photo'].urls.thumb.toString(),
+                              data.stayImage![0]['photo'].urls.full.toString(),
                             )
                           : loadImage("", height: 100.h, fit: BoxFit.cover)),
                 ),

@@ -289,8 +289,8 @@ class _ItineraryDesktopTileState extends State<ItineraryDesktopTile> {
                     height: 180.0, // Height spans from top to bottom
                     child: data.imageUrl?.isNotEmpty == true
                         ? loadImageWithThumbnail(
-                            data.imageUrl![0].urls.thumb.toString(),
-                            data.imageUrl![0].urls.full.toString(),
+                            data.imageUrl![0]['photo'].urls.thumb.toString(),
+                            data.imageUrl![0]['photo'].urls.full.toString(),
                           )
                         : loadImage("", height: 180.0, fit: BoxFit.fill),
                   ),
@@ -467,8 +467,8 @@ class _ItineraryDesktopTileState extends State<ItineraryDesktopTile> {
                     height: 180.0, // Height spans from top to bottom
                     child: data.foodImages?.isNotEmpty == true
                         ? loadImageWithThumbnail(
-                            data.imageUrl![0].urls.thumb.toString(),
-                            data.imageUrl![0].urls.full.toString(),
+                            data.foodImages![0]['photo'].urls.thumb.toString(),
+                            data.foodImages![0]['photo'].urls.full.toString(),
                           )
                         : loadImage("", height: 180.0, fit: BoxFit.fill),
                   ),
@@ -554,8 +554,8 @@ class _ItineraryDesktopTileState extends State<ItineraryDesktopTile> {
                     borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
                     child: (data.imageUrl != null && data.imageUrl!.isNotEmpty)
                         ? loadImageWithThumbnail(
-                            data.imageUrl![1].urls.thumb.toString(),
-                            data.imageUrl![1].urls.full.toString(),
+                            data.imageUrl![1]['photo'].urls.thumb.toString(),
+                            data.imageUrl![1]['photo'].urls.full.toString(),
                           )
                         : loadImage("",
                             height: 100.h,
@@ -714,15 +714,15 @@ class _ItineraryDesktopTileState extends State<ItineraryDesktopTile> {
                   height: 75.w,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
-                    child:
-                        (data.foodImages != null && data.foodImages!.isNotEmpty)
-                            ? loadImageWithThumbnail(
-                                data.foodImages![1].urls.thumb.toString(),
-                                data.foodImages![1].urls.full.toString(),
-                              )
-                            : loadImage("",
-                                height: 100.h,
-                                fit: BoxFit.cover), // Fallback for image
+                    child: (data.foodImages != null &&
+                            data.foodImages!.isNotEmpty)
+                        ? loadImageWithThumbnail(
+                            data.foodImages![1]['photo'].urls.thumb.toString(),
+                            data.foodImages![1]['photo'].urls.full.toString(),
+                          )
+                        : loadImage("",
+                            height: 100.h,
+                            fit: BoxFit.cover), // Fallback for image
                   ),
                 ),
                 Row(
@@ -829,15 +829,15 @@ class _ItineraryDesktopTileState extends State<ItineraryDesktopTile> {
                   height: 75.w,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(ScreenUtil().radius(4)),
-                    child:
-                        (data.stayImage != null && data.stayImage!.isNotEmpty)
-                            ? loadImageWithThumbnail(
-                                data.stayImage![0].urls.thumb.toString(),
-                                data.stayImage![0].urls.full.toString(),
-                              )
-                            : loadImage("",
-                                height: 100.h,
-                                fit: BoxFit.cover), // Fallback for image
+                    child: (data.stayImage != null &&
+                            data.stayImage!.isNotEmpty)
+                        ? loadImageWithThumbnail(
+                            data.stayImage![0]['photo'].urls.thumb.toString(),
+                            data.stayImage![0]['photo'].urls.full.toString(),
+                          )
+                        : loadImage("",
+                            height: 100.h,
+                            fit: BoxFit.cover), // Fallback for image
                   ),
                 ),
                 Row(

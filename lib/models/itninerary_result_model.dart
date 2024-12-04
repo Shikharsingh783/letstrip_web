@@ -63,9 +63,9 @@ class ItineraryResultModel {
   String? stayRating;
   String? stayCost;
   String? ratingLunch;
-  List<Photo>? imageUrl;
-  List<Photo>? foodImages;
-  List<Photo>? stayImage;
+  List<Map<String, dynamic>>? imageUrl;
+  List<Map<String, dynamic>>? foodImages;
+  List<Map<String, dynamic>>? stayImage;
 
   /// Factory method to create an instance from JSON
   factory ItineraryResultModel.fromJson(Map<String, dynamic> json) {
@@ -99,13 +99,13 @@ class ItineraryResultModel {
       stayCost: json['stayCost'] as String?,
       ratingLunch: json['ratingLunch'] as String?,
       imageUrl: (json['imageUrl'] as List<dynamic>?)
-          ?.map((item) => Photo.fromJson(item as Map<String, dynamic>))
+          ?.map((item) => item as Map<String, dynamic>)
           .toList(),
       foodImages: (json['foodImages'] as List<dynamic>?)
-          ?.map((item) => Photo.fromJson(item as Map<String, dynamic>))
+          ?.map((item) => item as Map<String, dynamic>)
           .toList(),
       stayImage: (json['stayImage'] as List<dynamic>?)
-          ?.map((item) => Photo.fromJson(item as Map<String, dynamic>))
+          ?.map((item) => item as Map<String, dynamic>)
           .toList(),
     );
   }
@@ -141,9 +141,9 @@ class ItineraryResultModel {
       'stayRating': stayRating,
       'stayCost': stayCost,
       'ratingLunch': ratingLunch,
-      'imageUrl': imageUrl?.map((item) => item.toJson()).toList(),
-      'foodImages': foodImages?.map((item) => item.toJson()).toList(),
-      'stayImage': stayImage?.map((item) => item.toJson()).toList(),
+      'imageUrl': imageUrl,
+      'foodImages': foodImages,
+      'stayImage': stayImage,
     };
   }
 
@@ -177,9 +177,9 @@ class ItineraryResultModel {
     String? stayRating,
     String? stayCost,
     String? ratingLunch,
-    List<Photo>? imageUrl,
-    List<Photo>? foodImages,
-    List<Photo>? stayImage,
+    List<Map<String, dynamic>>? imageUrl,
+    List<Map<String, dynamic>>? foodImages,
+    List<Map<String, dynamic>>? stayImage,
   }) {
     return ItineraryResultModel(
       day: day ?? this.day,
