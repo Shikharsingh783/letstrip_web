@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:letstrip/Features/itinerary/widgets/responsive_appBar_2.dart';
-import 'package:letstrip/Features/itinerary/widgets/responsive_appbar.dart';
 import 'package:letstrip/Features/recommendation/widgets/recommandation_container.dart';
 import 'package:letstrip/models/itinerary_request.dart';
 
@@ -19,7 +18,7 @@ class _RecommandationResultScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: ResponsiveAppBar2(),
-      body: RecommandationContainer(),
+      body: const RecommandationContainer(),
     );
   }
 }

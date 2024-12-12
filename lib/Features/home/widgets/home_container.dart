@@ -22,17 +22,22 @@ class _HomeContainerState extends State<HomeContainer> {
 
     // Initialize the video controller
     _videoController = VideoPlayerController.network(
-      'https://res.cloudinary.com/ddyyltrso/video/upload/v1733332886/s59lv7kdze4z0pbl9amm.mp4',
+      'https://res.cloudinary.com/ddyyltrso/video/upload/v1733343091/eupzirwuod2jcym0todk.mp4',
     )..initialize().then((_) {
-        setState(() {
-          _isVideoInitialized = true;
-          _videoController.setLooping(true); // Loop the video
-          _videoController.play(); // Start playing the video
-        });
+        // Ensure widget is still mounted before setting state
+        if (mounted) {
+          setState(() {
+            _isVideoInitialized = true;
+            _videoController.setLooping(true); // Loop the video
+            _videoController.play(); // Start playing the video
+          });
+        }
       }).catchError((error) {
-        setState(() {
-          _hasError = true;
-        });
+        if (mounted) {
+          setState(() {
+            _hasError = true;
+          });
+        }
         print('Error initializing video: $error');
       });
   }
